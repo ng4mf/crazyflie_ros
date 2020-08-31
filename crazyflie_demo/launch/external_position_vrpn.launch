@@ -1,17 +1,23 @@
 <?xml version="1.0"?>
 <launch>
-  <arg name="uri" default="radio://0/80/2M/E7E7E7E7E7" /> <!--Adjust this parameter-->
-  <arg name="frame" default="crazyflie1" /> <!--For OptiTrack users: frame name should match the Rigid-body name on Motive-->
-  <arg name="ip" default="172.16.1.1" /> <!--Adjust this parameter-->
+
+  <arg name="joy_dev" default="/dev/input/js0" />
+  <arg name="ip" default="vicon" />
   <arg name="port" default="3883" />
+  <arg name="server" default="192.168.2.2"/>
+
+  <arg name="uri" default="radio://0/90/2M" />
+  <arg name="frame" default="crazyflie" />
+
+
 
   <include file="$(find crazyflie_driver)/launch/crazyflie_server.launch">
   </include>
 
-  <group ns="crazyflie1">
+  <group ns="crazyflie">
     <node pkg="crazyflie_driver" type="crazyflie_add" name="crazyflie_add" output="screen">
       <param name="uri" value="$(arg uri)" />
-      <param name="tf_prefix" value="crazyflie1" />
+      <param name="tf_prefix" value="crazyflie" />
       <param name="enable_logging" value="False" /> <!--Logging is disabled to reduce unnecessary bandwith consumption-->
       <param name="enable_logging_imu" value="False" />
       <param name="enable_logging_temperature" value="False" />
@@ -27,12 +33,35 @@
     </node>
 
     <node name="pose" pkg="crazyflie_demo" type="publish_external_position_vrpn.py" output="screen"> 
-      <param name="topic" value="/crazyflie1/vrpn_client_node/crazyflie1/pose" />
+      <param name="topic" value="/crazyflie/vrpn_client_node/crazyflie/pose" />
     </node>
 
     <!--Run vrpn client-->
-    <!--For OptiTrack users: make sure you edit vrpn_client_ros.cpp file to adjust axes transformation-->
+    <!--For OptiTrack users: make sure you edit vrpn_client_ros.cpp file to adjust axes transformation
+
+  -->
+
     <node pkg="vrpn_client_ros" type="vrpn_client_node" name="vrpn_client_node" output="screen">
+      <rosparam subst_value="true">
+        server: $(arg server)
+        port: 3883
+
+        update_frequency: 100.0
+        frame1_id: world
+
+        # Use the VRPN server's time, or the client's ROS time.
+        use_server_time: false
+        broadcast_tf: true
+
+        # Must either specify refresh frequency > 0.0, or a list of trackers to create
+        refresh_tracker_frequency: 1.0
+        #trackers:
+        #- FirstTracker
+        #- SecondTracker
+      </rosparam>
+    </node>
+
+<!--     <node pkg="vrpn_client_ros" type="vrpn_client_node" name="vrpn_client_node" output="screen">
     <rosparam subst_value="true">
       server: $(arg ip)
       port: $(arg port)
@@ -43,6 +72,11 @@
       broadcast_tf: false
       refresh_tracker_frequency: 1.0
     </rosparam>
-    </node>
+    </node> -->
   </group>
+
+  <node pkg="rqt_plot" type="rqt_plot" name="rqt_plot1" args="/crazyflie/log1/values[0] /crazyflie/log1/values[1] /crazyflie/log1/values[2]"/>
+
+  <node pkg="rqt_plot" type="rqt_plot" name="rqt_plot_yaw" args="/crazyflie/log1/values[3]"/>
+
 </launch>
