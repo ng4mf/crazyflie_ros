@@ -1,5 +1,9 @@
 <?xml version="1.0"?>
 <launch>
+
+  <arg name="mqname1" default="modquad13" />
+  <arg name="mqname2" default="modquad14" />
+
   <arg name="uri1" default="radio://0/90/2M" />
   <arg name="uri2" default="radio://0/80/2M" />
   <arg name="frame1" default="/vicon/crazyflie/crazyflie" />
@@ -21,10 +25,10 @@
     <param name="dev" value="$(arg joy_dev)" />
   </node>
 
-  <group ns="modquad13">
+  <group ns="$(arg mqname1)">
     <include file="$(find crazyflie_driver)/launch/crazyflie_add.launch">
       <arg name="uri" value="$(arg uri1)" />
-      <arg name="tf_prefix" value="modquad13" />
+      <arg name="tf_prefix" value="$(arg mqname1)" />
       <arg name="enable_logging" value="True" />
 
 	  <rosparam>
@@ -56,12 +60,13 @@
     <node name="firmware_params_server" pkg="modquad_simulator" type="firmware_params_server.py" output="screen">
 	</node>
 
-    <node pkg="tf" type="static_transform_publisher" name="baselink_broadcaster" args="0 0 0 0 0 0 1 world /modquad13/base_link 10" />
+    <node pkg="tf" type="static_transform_publisher" name="baselink_broadcaster" args="0 0 0 0 0 0 1 world /$(arg mqname1)/base_link 10" />
   </group>
-  <group ns="modquad14">
+
+  <group ns="$(arg mqname2)">
     <include file="$(find crazyflie_driver)/launch/crazyflie_add.launch">
       <arg name="uri" value="$(arg uri2)" />
-      <arg name="tf_prefix" value="modquad14" />
+      <arg name="tf_prefix" value="$(arg mqname2)" />
       <arg name="enable_logging" value="True" />
 
 	  <!-- Enable the mellinger controller -->
@@ -95,7 +100,7 @@
 	</node>
 
     <!--<node pkg="tf" type="static_transform_publisher" name="world_to_odom_broadcaster" args="0 0 0 0 0 0 1 world /modquad14/base_link 100" />-->
-    <node pkg="tf" type="static_transform_publisher" name="baselink_broadcaster" args="0 0 0 0 0 0 1 world /modquad14/base_link 10" />
+    <node pkg="tf" type="static_transform_publisher" name="baselink_broadcaster" args="0 0 0 0 0 0 1 world /$(arg mqname2)/base_link 10" />
   </group>
 
   <!-- run vicon bridge -->

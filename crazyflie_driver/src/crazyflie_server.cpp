@@ -297,6 +297,7 @@ void cmdPositionSetpoint(
             break;
           case Crazyflie::ParamTypeFloat:
             updateParam<float, float>(entry->id, ros_param);
+	    ROS_INFO("Request update %s/%s", group.c_str(), name.c_str());
             break;
         }
       }
