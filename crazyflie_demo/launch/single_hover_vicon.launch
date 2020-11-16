@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="mqname1" default="modquad15" />
+  <arg name="frame1" default="/modquad15" />
+  <arg name="uri1" default="radio://0/80/2M/E7E7E7E715" />
+
+  <arg name="joy_dev" default="/dev/input/js0" />
+
+  <arg name="x1" default="0" />
+  <arg name="y1" default="0" />
+  <arg name="z1" default="0.5" />
+
+  <include file="$(find crazyflie_driver)/launch/crazyflie_server.launch">
+  </include>
+
+  <node name="joy" pkg="joy" type="joy_node" output="screen">
+    <param name="dev" value="$(arg joy_dev)" />
+  </node>
+
+  <group ns="$(arg mqname1)">
+    <include file="$(find crazyflie_driver)/launch/crazyflie_add.launch">
+      <arg name="uri" value="$(arg uri1)" />
+      <arg name="tf_prefix" value="$(arg mqname1)" />
+      <arg name="enable_logging" value="True" />
+
+	  <rosparam>
+  	    firmwareParams:
+  	      commander:
+  	        enHighLevel: 0
+  	      stabilizer:
+  	        estimator: 2 # 1: complementary, 2: kalman
+  	        controller: 1 # 1: PID, 2: mellinger
+  	  </rosparam>
+    </include>
+
+    <node name="joystick_controller" pkg="crazyflie_demo" type="controller.py" output="screen">
+      <param name="use_crazyflie_controller" value="True" />
+    </node>
+
+    <include file="$(find crazyflie_controller)/launch/crazyflie2.launch">
+      <arg name="frame" value="$(arg frame1)" />
+    </include>
+
+    <node name="pose" pkg="crazyflie_demo" type="publish_pose.py" output="screen">
+      <param name="name" value="goal" />
+      <param name="rate" value="30" />
+      <param name="x" value="$(arg x1)" />
+      <param name="y" value="$(arg y1)" />
+      <param name="z" value="$(arg z1)" />
+    </node>
+
+    <node name="firmware_params_server" pkg="modquad_simulator" type="firmware_params_server.py" output="screen">
+	</node>
+  </group>
+
+  <node pkg="tf" type="static_transform_publisher" name="baselink_broadcaster" args="0 0 0 0 0 0 1 world /base_link 10" />
+
+</launch>

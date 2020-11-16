@@ -11,10 +11,10 @@
   <arg name="uri3" default="radio://0/70/2M/E7E7E7E718" />
   <arg name="uri4" default="radio://0/65/2M/E7E7E7E719" />
 
-  <arg name="frame1" default="/modquad16" />
-  <arg name="frame2" default="/modquad17" />
-  <arg name="frame3" default="/modquad18" />
-  <arg name="frame4" default="/modquad19" />
+  <arg name="frame1" default="modquad16" />
+  <arg name="frame2" default="modquad17" />
+  <arg name="frame3" default="modquad18" />
+  <arg name="frame4" default="modquad19" />
 
   <arg name="joy_dev" default="/dev/input/js0" />
 
