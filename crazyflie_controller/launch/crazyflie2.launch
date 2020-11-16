@@ -8,5 +8,6 @@
     <param name="frame" value="$(arg frame)" />
     <param name="worldFrame" value="$(arg worldFrame)" />
     <rosparam command="load" file="$(find crazyflie_controller)/config/crazyflie2.yaml" />
+    <!-- <rosparam command="load" file="$(find crazyflie_controller)/config/crazyflie2_gains.yaml" /> -->
   </node>
 </launch>

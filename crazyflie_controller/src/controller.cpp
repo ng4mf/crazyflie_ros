@@ -65,8 +65,10 @@ public:
         , m_state(Idle)
         , m_goal()
         , m_subscribeGoal()
+        , m_subscribeModquadCmd()
         , m_serviceTakeoff()
         , m_serviceLand()
+        , m_serviceToggleModquad()
         , m_thrust(0)
         , m_startZ(0)
     {
@@ -74,8 +76,10 @@ public:
         m_listener.waitForTransform(m_worldFrame, m_frame, ros::Time(0), ros::Duration(10.0)); 
         m_pubNav = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1);
         m_subscribeGoal = nh.subscribe("goal", 1, &Controller::goalChanged, this);
+        m_subscribeModquadCmd = nh.subscribe("mq_cmd_vel", 1, &Controller::updateModquadCmd, this);
         m_serviceTakeoff = nh.advertiseService("takeoff", &Controller::takeoff, this);
         m_serviceLand = nh.advertiseService("land", &Controller::land, this);
+        m_serviceToggleModquad = nh.advertiseService("toggle_modquad", &Controller::toggle_modquad, this);
     }
 
     void run(double frequency)
@@ -92,11 +96,33 @@ private:
         m_goal = *msg;
     }
 
+    void updateModquadCmd(
+        const geometry_msgs::Twist::ConstPtr& msg)
+    {
+        m_modquad_cmd = *msg;
+    }
+
+    bool toggle_modquad(
+        std_srvs::Empty::Request& req,
+        std_srvs::Empty::Response& res)
+    {
+	ROS_INFO("TOGGLE!");
+	if (m_state != ModQuad) {
+		ROS_INFO("Toggle ON Modquad");
+		m_state = ModQuad;
+	} else {
+		m_state = Automatic;
+		ROS_INFO("Toggle OFF Modquad");
+	}
+
+        return true;
+    }
+
     bool takeoff(
         std_srvs::Empty::Request& req,
         std_srvs::Empty::Response& res)
     {
-        ROS_INFO("Takeoff requested!");
+        ROS_INFO("Controller Takeoff requested!");
         m_state = TakingOff;
 
         tf::StampedTransform transform;
@@ -110,7 +136,7 @@ private:
         std_srvs::Empty::Request& req,
         std_srvs::Empty::Response& res)
     {
-        ROS_INFO("Landing requested!");
+        ROS_INFO("Controller Landing requested!");
         m_state = Landing;
 
         return true;
@@ -142,15 +168,14 @@ private:
             {
                 tf::StampedTransform transform;
                 m_listener.lookupTransform(m_worldFrame, m_frame, ros::Time(0), transform);
-                if (transform.getOrigin().z() > m_startZ + 0.05 || m_thrust > 50000)
+                if (transform.getOrigin().z() > m_startZ + 0.05 || 
+		    m_thrust > 50000)
                 {
                     pidReset();
                     m_pidZ.setIntegral(m_thrust / m_pidZ.ki());
                     m_state = Automatic;
                     m_thrust = 0;
-                }
-                else
-                {
+                } else {
                     m_thrust += 10000 * dt;
                     geometry_msgs::Twist msg;
                     msg.linear.z = m_thrust;
@@ -203,6 +228,11 @@ private:
 
             }
             break;
+	case ModQuad:
+	{
+                m_pubNav.publish(m_modquad_cmd);
+		break;
+	}
         case Idle:
             {
                 geometry_msgs::Twist msg;
@@ -220,6 +250,7 @@ private:
         Automatic = 1,
         TakingOff = 2,
         Landing = 3,
+	ModQuad = 4,
     };
 
 private:
@@ -233,9 +264,12 @@ private:
     PID m_pidYaw;
     State m_state;
     geometry_msgs::PoseStamped m_goal;
+    geometry_msgs::Twist m_modquad_cmd;
     ros::Subscriber m_subscribeGoal;
+    ros::Subscriber m_subscribeModquadCmd;
     ros::ServiceServer m_serviceTakeoff;
     ros::ServiceServer m_serviceLand;
+    ros::ServiceServer m_serviceToggleModquad;
     float m_thrust;
     float m_startZ;
 };
@@ -251,7 +285,8 @@ int main(int argc, char **argv)
   std::string frame;
   n.getParam("frame", frame);
   double frequency;
-  n.param("frequency", frequency, 50.0);
+
+  n.param("frequency", frequency, 100.0); // Orig 100.0
 
   Controller controller(worldFrame, frame, n);
   controller.run(frequency);

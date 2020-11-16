@@ -26,6 +26,11 @@ class Controller():
             rospy.wait_for_service('takeoff')
             rospy.loginfo("found takeoff service")
             self._takeoff = rospy.ServiceProxy('takeoff', Empty)
+
+            rospy.loginfo("waiting for toggle_modquad service")
+            rospy.wait_for_service('toggle_modquad')
+            rospy.loginfo("found toggle_modquad service")
+            self._toggle_modquad = rospy.ServiceProxy('toggle_modquad', Empty)
         else:
             self._land = None
             self._takeoff = None
@@ -34,6 +39,7 @@ class Controller():
         # services were found
         self._buttons = None
         rospy.Subscriber(joy_topic, Joy, self._joyChanged)
+        rospy.loginfo("Subscribe {}".format(joy_topic))
 
     def _joyChanged(self, data):
         for i in range(0, len(data.buttons)):
@@ -44,6 +50,9 @@ class Controller():
                     self._emergency()
                 if i == 2 and data.buttons[i] == 1 and self._takeoff != None:
                     self._takeoff()
+                if i == 3 and data.buttons[i] == 1:
+                    #rospy.loginfo("REQUEST TOGGLE")
+                    self._toggle_modquad()
                 if i == 4 and data.buttons[i] == 1:
                     value = int(rospy.get_param("ring/headlightEnable"))
                     if value == 0:
@@ -58,6 +67,6 @@ class Controller():
 if __name__ == '__main__':
     rospy.init_node('crazyflie_demo_controller', anonymous=True)
     use_controller = rospy.get_param("~use_crazyflie_controller", False)
-    joy_topic = rospy.get_param("~joy_topic", "joy")
+    joy_topic = rospy.get_param("~joy_topic", "/joy")
     controller = Controller(use_controller, joy_topic)
     rospy.spin()

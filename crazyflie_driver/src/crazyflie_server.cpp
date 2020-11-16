@@ -297,6 +297,7 @@ void cmdPositionSetpoint(
             break;
           case Crazyflie::ParamTypeFloat:
             updateParam<float, float>(entry->id, ros_param);
+	    ROS_INFO("Request update %s/%s", group.c_str(), name.c_str());
             break;
         }
       }
@@ -405,8 +406,8 @@ void cmdPositionSetpoint(
 
 
     m_serviceSetGroupMask = n.advertiseService(m_tf_prefix + "/set_group_mask", &CrazyflieROS::setGroupMask, this);
-    m_serviceTakeoff = n.advertiseService(m_tf_prefix + "/takeoff", &CrazyflieROS::takeoff, this);
-    m_serviceLand = n.advertiseService(m_tf_prefix + "/land", &CrazyflieROS::land, this);
+    // m_serviceTakeoff = n.advertiseService(m_tf_prefix + "/takeoff", &CrazyflieROS::takeoff, this);
+    // m_serviceLand = n.advertiseService(m_tf_prefix + "/land", &CrazyflieROS::land, this);
     m_serviceStop = n.advertiseService(m_tf_prefix + "/stop", &CrazyflieROS::stop, this);
     m_serviceGoTo = n.advertiseService(m_tf_prefix + "/go_to", &CrazyflieROS::goTo, this);
     m_serviceUploadTrajectory = n.advertiseService(m_tf_prefix + "/upload_trajectory", &CrazyflieROS::uploadTrajectory, this);
@@ -762,7 +763,7 @@ void cmdPositionSetpoint(
     crazyflie_driver::Takeoff::Request& req,
     crazyflie_driver::Takeoff::Response& res)
   {
-    ROS_INFO_NAMED(m_tf_prefix, "Takeoff requested");
+    ROS_INFO_NAMED(m_tf_prefix, "Server Takeoff requested");
     m_cf.takeoff(req.height, req.duration.toSec(), req.groupMask);
     return true;
   }
@@ -771,7 +772,7 @@ void cmdPositionSetpoint(
     crazyflie_driver::Land::Request& req,
     crazyflie_driver::Land::Response& res)
   {
-    ROS_INFO_NAMED(m_tf_prefix, "Land requested");
+    ROS_INFO_NAMED(m_tf_prefix, "Server Land requested");
     m_cf.land(req.height, req.duration.toSec(), req.groupMask);
     return true;
   }

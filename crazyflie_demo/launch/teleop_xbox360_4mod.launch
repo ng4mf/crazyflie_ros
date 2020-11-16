@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+
+<launch>
+  <arg name="mqname1" default="modquad16" />
+  <arg name="mqname2" default="modquad17" />
+  <arg name="mqname3" default="modquad18" />
+  <arg name="mqname4" default="modquad19" />
+
+  <arg name="uri1" default="radio://0/80/2M/E7E7E7E716" />
+  <arg name="uri2" default="radio://0/75/2M/E7E7E7E717" />
+  <arg name="uri3" default="radio://0/70/2M/E7E7E7E718" />
+  <arg name="uri4" default="radio://0/65/2M/E7E7E7E719" />
+
+  <arg name="joy_dev" default="/dev/input/js0" />
+
+  <include file="$(find crazyflie_driver)/launch/crazyflie_server.launch">
+  </include>
+
+  <node name="joy" pkg="joy" type="joy_node" output="screen">
+    <param name="dev" value="$(arg joy_dev)" />
+  </node>
+
+  <group ns="$(arg mqname1)">
+    <param name="$(arg mqname1)/pid_rate/yaw_ki" value="0"/>
+    <param name="$(arg mqname1)/pid_rate/pitch_ki" value="0"/>
+    <param name="$(arg mqname1)/pid_rate/roll_ki" value="0"/>
+
+    <param name="$(arg mqname1)/pid_attitude/yaw_ki" value="0"/>
+    <param name="$(arg mqname1)/pid_attitude/pitch_ki" value="0"/>
+    <param name="$(arg mqname1)/pid_attitude/roll_ki" value="0"/>
+
+    <include file="$(find crazyflie_driver)/launch/crazyflie_add.launch">
+      <arg name="uri" value="$(arg uri1)" />
+      <arg name="tf_prefix" value="$(arg mqname1)" />
+      <arg name="enable_logging" value="True" />
+    </include>
+
+    <node name="joy" pkg="joy" type="joy_node" output="screen" >
+      <param name="dev" value="$(arg joy_dev)" />
+    </node>
+
+    <include file="$(find crazyflie_demo)/launch/xbox360.launch">
+    </include>
+
+    <node name="crazyflie_demo_controller" pkg="crazyflie_demo" type="controller.py" output="screen">
+    </node>
+  </group>
+
+  <group ns="$(arg mqname2)">
+    <param name="$(arg mqname2)/pid_rate/yaw_ki" value="0"/>
+    <param name="$(arg mqname2)/pid_rate/pitch_ki" value="0"/>
+    <param name="$(arg mqname2)/pid_rate/roll_ki" value="0"/>
+
+    <param name="$(arg mqname2)/pid_attitude/yaw_ki" value="0"/>
+    <param name="$(arg mqname2)/pid_attitude/pitch_ki" value="0"/>
+    <param name="$(arg mqname2)/pid_attitude/roll_ki" value="0"/>
+
+    <include file="$(find crazyflie_driver)/launch/crazyflie_add.launch">
+      <arg name="uri" value="$(arg uri2)" />
+      <arg name="tf_prefix" value="$(arg mqname2)" />
+      <arg name="enable_logging" value="True" />
+    </include>
+
+    <node name="joy" pkg="joy" type="joy_node" output="screen" >
+      <param name="dev" value="$(arg joy_dev)" />
+    </node>
+
+    <include file="$(find crazyflie_demo)/launch/xbox360.launch">
+    </include>
+
+    <node name="crazyflie_demo_controller" pkg="crazyflie_demo" type="controller.py" output="screen">
+    </node>
+  </group>
+
+  <group ns="$(arg mqname3)">
+    <param name="$(arg mqname3)/pid_rate/yaw_ki" value="0"/>
+    <param name="$(arg mqname3)/pid_rate/pitch_ki" value="0"/>
+    <param name="$(arg mqname3)/pid_rate/roll_ki" value="0"/>
+
+    <param name="$(arg mqname3)/pid_attitude/yaw_ki" value="0"/>
+    <param name="$(arg mqname3)/pid_attitude/pitch_ki" value="0"/>
+    <param name="$(arg mqname3)/pid_attitude/roll_ki" value="0"/>
+
+    <include file="$(find crazyflie_driver)/launch/crazyflie_add.launch">
+      <arg name="uri" value="$(arg uri3)" />
+      <arg name="tf_prefix" value="$(arg mqname3)" />
+      <arg name="enable_logging" value="True" />
+    </include>
+
+    <node name="joy" pkg="joy" type="joy_node" output="screen" >
+      <param name="dev" value="$(arg joy_dev)" />
+    </node>
+
+    <include file="$(find crazyflie_demo)/launch/xbox360.launch">
+    </include>
+
+    <node name="crazyflie_demo_controller" pkg="crazyflie_demo" type="controller.py" output="screen">
+    </node>
+  </group>
+
+  <group ns="$(arg mqname4)">
+    <param name="$(arg mqname4)/pid_rate/yaw_ki" value="0"/>
+    <param name="$(arg mqname4)/pid_rate/pitch_ki" value="0"/>
+    <param name="$(arg mqname4)/pid_rate/roll_ki" value="0"/>
+
+    <param name="$(arg mqname4)/pid_attitude/yaw_ki" value="0"/>
+    <param name="$(arg mqname4)/pid_attitude/pitch_ki" value="0"/>
+    <param name="$(arg mqname4)/pid_attitude/roll_ki" value="0"/>
+
+    <include file="$(find crazyflie_driver)/launch/crazyflie_add.launch">
+      <arg name="uri" value="$(arg uri4)" />
+      <arg name="tf_prefix" value="$(arg mqname4)" />
+      <arg name="enable_logging" value="True" />
+    </include>
+
+    <node name="joy" pkg="joy" type="joy_node" output="screen" >
+      <param name="dev" value="$(arg joy_dev)" />
+    </node>
+
+    <include file="$(find crazyflie_demo)/launch/xbox360.launch">
+    </include>
+
+    <node name="crazyflie_demo_controller" pkg="crazyflie_demo" type="controller.py" output="screen">
+    </node>
+  </group>
+
+</launch>
