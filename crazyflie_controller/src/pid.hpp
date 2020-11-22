@@ -49,6 +49,7 @@ public:
         ros::Time time = ros::Time::now();
         float dt = time.toSec() - m_previousTime.toSec();
         float error = targetValue - value;
+        m_error = error;
         m_integral += error * dt;
         m_integral = std::max(std::min(m_integral, m_integratorMax), m_integratorMin);
         float p = m_kp * error;
@@ -69,6 +70,9 @@ public:
         return std::max(std::min(output, m_maxOutput), m_minOutput);
     }
 
+    float m_previousError;
+    float m_error;
+    float m_integral;
 private:
     float m_kp;
     float m_kd;
@@ -77,7 +81,5 @@ private:
     float m_maxOutput;
     float m_integratorMin;
     float m_integratorMax;
-    float m_integral;
-    float m_previousError;
     ros::Time m_previousTime;
 };

@@ -13,7 +13,7 @@
 
   <arg name="joy_dev" default="/dev/input/js0" />
 
-  <arg name="x1" default="0" />
+  <arg name="x1" default="0.0" />
   <arg name="y1" default="0" />
   <arg name="z1" default="0.5" />
 
@@ -29,11 +29,6 @@
       <arg name="uri" value="$(arg uri1)" />
       <arg name="tf_prefix" value="$(arg mqname1)" />
       <arg name="enable_logging" value="True" />
-        <rosparam>
-          genericLogTopics: ["log1"]
-          genericLogTopicFrequencies: [100]
-          genericLogTopic_log1_Variables: ["controller.cmd_thrust", "controller.cmd_roll", "controller.cmd_pitch", "controller.cmd_yaw"]
-        </rosparam>
     </include>
 
     <node name="joystick_controller" pkg="crazyflie_demo" type="controller.py" output="screen">
@@ -52,8 +47,15 @@
       <param name="z" value="$(arg z1)" />
     </node>
 
+    <node name="currentpose" pkg="crazyflie_demo" type="publish_external_pose_vrpn.py" output="screen">
+      <param name="topic" value="/vrpn_client_node/modquad15/pose" />
+    </node>
+
     <node name="firmware_params_server" pkg="modquad_simulator" type="firmware_params_server.py" output="screen">
 	</node>
+
+    <node pkg="tf" type="static_transform_publisher" name="baselink_broadcaster" args="0 0 0 0 0 0 1 $(arg frame1) /$(arg mqname1)/base_link 100" >
+    </node>
   </group>
 
     <node pkg="vrpn_client_ros" type="vrpn_client_node" name="vrpn_client_node" output="screen">
@@ -75,6 +77,13 @@
         #- SecondTracker
       </rosparam>
     </node>
+
+    <!--
     <node pkg="tf" type="static_transform_publisher" name="baselink_broadcaster" args="0 0 0 0 0 0 1 world /base_link 10" />
+    -->
+
+    <!-- run rviz -->
+    <param name="robot_description" command="$(find xacro)/xacro.py $(find crazyflie_description)/urdf/crazyflie.urdf.xacro" />
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find crazyflie_demo)/launch/crazyflie_pos.rviz" required="true" />
 
 </launch>

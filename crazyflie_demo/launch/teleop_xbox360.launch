@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <launch>
-  <arg name="uri" default="radio://0/80/2M" />
+  <arg name="uri" default="radio://0/80/2M/E7E7E7E715" />
   <arg name="joy_dev" default="/dev/input/js0" />
 
   <include file="$(find crazyflie_driver)/launch/crazyflie_server.launch">
@@ -11,7 +11,7 @@
     <!--<param name="crazyflie/pid_rate/yaw_kp" value="200"/>-->
     <include file="$(find crazyflie_driver)/launch/crazyflie_add.launch">
       <arg name="uri" value="$(arg uri)" />
-      <arg name="tf_prefix" value="crazyflie" />
+      <arg name="tf_prefix" value="modquad15" />
       <arg name="enable_logging" value="True" />
     </include>
 
@@ -30,7 +30,10 @@
 
   <!-- <node pkg="rqt_plot" type="rqt_plot" name="rqt_plot" args="/crazyflie/temperature/temperature"/> -->
 
+<!--
+
   <node pkg="rqt_plot" type="rqt_plot" name="rqt_plot2" args="/crazyflie/battery"/>
 
   <node pkg="rqt_plot" type="rqt_plot" name="rqt_plot3" args="/crazyflie/rssi"/>
+-->
 </launch>

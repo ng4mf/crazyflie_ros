@@ -224,7 +224,7 @@ private:
 void cmdHoverSetpoint(
     const crazyflie_driver::Hover::ConstPtr& msg)
   {
-     //ROS_INFO("got a hover setpoint");
+    ROS_INFO("got a hover setpoint");
     if (!m_isEmergency) {
       float vx = msg->vx;
       float vy = msg->vy;
@@ -233,18 +233,18 @@ void cmdHoverSetpoint(
 
       m_cf.sendHoverSetpoint(vx, vy, yawRate, zDistance);
       m_sentSetpoint = true;
-      //ROS_INFO("set a hover setpoint");
+      ROS_INFO("set a hover setpoint");
     }
   }
 
 void cmdStop(
     const std_msgs::Empty::ConstPtr& msg)
   {
-     //ROS_INFO("got a stop setpoint");
+    ROS_INFO("got a stop setpoint");
     if (!m_isEmergency) {
       m_cf.sendStop();
       m_sentSetpoint = true;
-      //ROS_INFO("set a stop setpoint");
+      ROS_INFO("set a stop setpoint");
     }
   }
 
@@ -257,6 +257,7 @@ void cmdPositionSetpoint(
       float z = msg->z;
       float yaw = msg->yaw;
 
+      ROS_INFO("Me: Set Position Setpoint");
       m_cf.sendPositionSetpoint(x, y, z, yaw);
       m_sentSetpoint = true;
     }
@@ -308,8 +309,8 @@ void cmdPositionSetpoint(
     return true;
   }
 
-  void cmdVelChanged(
-    const geometry_msgs::Twist::ConstPtr& msg)
+  int cmd_vel_cnt = 0;
+  void cmdVelChanged( const geometry_msgs::Twist::ConstPtr& msg )
   {
     if (!m_isEmergency) {
       float roll = msg->linear.y + m_roll_trim;
@@ -319,6 +320,9 @@ void cmdPositionSetpoint(
 
       m_cf.sendSetpoint(roll, pitch, yawrate, thrust);
       m_sentSetpoint = true;
+      ++cmd_vel_cnt;
+      //if (cmd_vel_cnt % 50 == 0)
+      //	ROS_INFO("Me: send [%u, %3.2f, %3.2f, %3.2f]", thrust, roll, pitch, yawrate);
     }
   }
 
@@ -352,7 +356,7 @@ void cmdPositionSetpoint(
         qx, qy, qz, qw,
         rollRate, pitchRate, yawRate);
       m_sentSetpoint = true;
-      //ROS_INFO("set a full state setpoint");
+      ROS_INFO("set a full state setpoint");
     }
   }
 
@@ -369,7 +373,7 @@ void cmdPositionSetpoint(
       m_cf.sendVelocityWorldSetpoint(
         x, y, z, yawRate);
       m_sentSetpoint = true;
-      //ROS_INFO("set a velocity world setpoint");
+      ROS_INFO("set a velocity world setpoint");
     }
   }
 
@@ -395,14 +399,14 @@ void cmdPositionSetpoint(
     n.setCallbackQueue(&m_callback_queue);
 
     m_subscribeCmdVel = n.subscribe(m_tf_prefix + "/cmd_vel", 1, &CrazyflieROS::cmdVelChanged, this);
-    m_subscribeCmdFullState = n.subscribe(m_tf_prefix + "/cmd_full_state", 1, &CrazyflieROS::cmdFullStateSetpoint, this);
-    m_subscribeCmdVelocityWorld = n.subscribe(m_tf_prefix+"/cmd_velocity_world", 1, &CrazyflieROS::cmdVelocityWorldSetpoint, this);
-    m_subscribeExternalPosition = n.subscribe(m_tf_prefix + "/external_position", 1, &CrazyflieROS::positionMeasurementChanged, this);
+    //m_subscribeCmdFullState = n.subscribe(m_tf_prefix + "/cmd_full_state", 1, &CrazyflieROS::cmdFullStateSetpoint, this);
+    //m_subscribeCmdVelocityWorld = n.subscribe(m_tf_prefix+"/cmd_velocity_world", 1, &CrazyflieROS::cmdVelocityWorldSetpoint, this);
+    //m_subscribeExternalPosition = n.subscribe(m_tf_prefix + "/external_position", 1, &CrazyflieROS::positionMeasurementChanged, this);
     m_subscribeExternalPose = n.subscribe(m_tf_prefix + "/external_pose", 1, &CrazyflieROS::poseMeasurementChanged, this);
     m_serviceEmergency = n.advertiseService(m_tf_prefix + "/emergency", &CrazyflieROS::emergency, this);
-    m_subscribeCmdHover = n.subscribe(m_tf_prefix + "/cmd_hover", 1, &CrazyflieROS::cmdHoverSetpoint, this);
-    m_subscribeCmdStop = n.subscribe(m_tf_prefix + "/cmd_stop", 1, &CrazyflieROS::cmdStop, this);
-    m_subscribeCmdPosition = n.subscribe(m_tf_prefix + "/cmd_position", 1, &CrazyflieROS::cmdPositionSetpoint, this);
+    //m_subscribeCmdHover = n.subscribe(m_tf_prefix + "/cmd_hover", 1, &CrazyflieROS::cmdHoverSetpoint, this);
+    //m_subscribeCmdStop = n.subscribe(m_tf_prefix + "/cmd_stop", 1, &CrazyflieROS::cmdStop, this);
+    //m_subscribeCmdPosition = n.subscribe(m_tf_prefix + "/cmd_position", 1, &CrazyflieROS::cmdPositionSetpoint, this);
 
 
     m_serviceSetGroupMask = n.advertiseService(m_tf_prefix + "/set_group_mask", &CrazyflieROS::setGroupMask, this);

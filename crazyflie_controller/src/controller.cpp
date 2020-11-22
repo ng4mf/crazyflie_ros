@@ -80,6 +80,7 @@ public:
         m_serviceTakeoff = nh.advertiseService("takeoff", &Controller::takeoff, this);
         m_serviceLand = nh.advertiseService("land", &Controller::land, this);
         m_serviceToggleModquad = nh.advertiseService("toggle_modquad", &Controller::toggle_modquad, this);
+	this->ready_to_send = false;
     }
 
     void run(double frequency)
@@ -99,6 +100,7 @@ private:
     void updateModquadCmd(
         const geometry_msgs::Twist::ConstPtr& msg)
     {
+	//this->ready_to_send = true;
         m_modquad_cmd = *msg;
     }
 
@@ -222,15 +224,27 @@ private:
                 msg.linear.x = m_pidX.update(0, targetDrone.pose.position.x);
                 msg.linear.y = m_pidY.update(0.0, targetDrone.pose.position.y);
                 msg.linear.z = m_pidZ.update(0.0, targetDrone.pose.position.z);
+		//ROS_INFO("Z_Err = %f, Z_P_Err = %f, dVZ = %f, accu_err = %f\n",
+		//	  (double)m_pidZ.m_error, (double)m_pidZ.m_previousError,
+		//	  (double)(m_pidZ.m_error - m_pidZ.m_previousError) / 0.01,
+		//	  (double)m_pidZ.m_integral);
+			
                 msg.angular.z = m_pidYaw.update(0.0, yaw);
-                m_pubNav.publish(msg);
-
+		ROS_INFO("Yaw_Err = %f, Yaw_P_Err = %f, dVYaw = %f, accu_err = %f\n",
+			  (double)m_pidYaw.m_error, (double)m_pidYaw.m_previousError,
+			  (double)(m_pidYaw.m_error - m_pidYaw.m_previousError) / 0.01,
+			  (double)m_pidYaw.m_integral);
+                m_pubNav.publish(msg); 
 
             }
             break;
 	case ModQuad:
 	{
-                m_pubNav.publish(m_modquad_cmd);
+		//if (this->ready_to_send) {
+                	m_pubNav.publish(m_modquad_cmd);
+			//ROS_INFO("pt: %5.1f", (double)m_modquad_cmd.linear.z);
+			//this->ready_to_send = false;
+		//}
 		break;
 	}
         case Idle:
@@ -272,6 +286,7 @@ private:
     ros::ServiceServer m_serviceToggleModquad;
     float m_thrust;
     float m_startZ;
+    bool ready_to_send;
 };
 
 int main(int argc, char **argv)
