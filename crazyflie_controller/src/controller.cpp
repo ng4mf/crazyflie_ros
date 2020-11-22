@@ -230,10 +230,10 @@ private:
 		//	  (double)m_pidZ.m_integral);
 			
                 msg.angular.z = m_pidYaw.update(0.0, yaw);
-		ROS_INFO("Yaw_Err = %f, Yaw_P_Err = %f, dVYaw = %f, accu_err = %f\n",
-			  (double)m_pidYaw.m_error, (double)m_pidYaw.m_previousError,
-			  (double)(m_pidYaw.m_error - m_pidYaw.m_previousError) / 0.01,
-			  (double)m_pidYaw.m_integral);
+		//ROS_INFO("Yaw_Err = %f, Yaw_P_Err = %f, dVYaw = %f, accu_err = %f\n",
+		//	  (double)m_pidYaw.m_error, (double)m_pidYaw.m_previousError,
+		//	  (double)(m_pidYaw.m_error - m_pidYaw.m_previousError) / 0.01,
+		//	  (double)m_pidYaw.m_integral);
                 m_pubNav.publish(msg); 
 
             }

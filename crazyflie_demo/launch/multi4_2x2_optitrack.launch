@@ -37,7 +37,7 @@
     <include file="$(find crazyflie_driver)/launch/crazyflie_add.launch">
       <arg name="uri" value="$(arg uri1)" />
       <arg name="tf_prefix" value="$(arg mqname1)" />
-      <arg name="enable_logging" value="True" />
+      <arg name="enable_logging" value="False" />
     </include>
 
     <node name="joystick_controller" pkg="crazyflie_demo" type="controller.py" output="screen">
@@ -71,7 +71,7 @@
     <include file="$(find crazyflie_driver)/launch/crazyflie_add.launch">
       <arg name="uri" value="$(arg uri2)" />
       <arg name="tf_prefix" value="$(arg mqname2)" />
-      <arg name="enable_logging" value="True" />
+      <arg name="enable_logging" value="False" />
     </include>
 
     <node name="joystick_controller" pkg="crazyflie_demo" type="controller.py" output="screen">
@@ -105,7 +105,7 @@
     <include file="$(find crazyflie_driver)/launch/crazyflie_add.launch">
       <arg name="uri" value="$(arg uri3)" />
       <arg name="tf_prefix" value="$(arg mqname3)" />
-      <arg name="enable_logging" value="True" />
+      <arg name="enable_logging" value="False" />
     </include>
 
     <node name="joystick_controller" pkg="crazyflie_demo" type="controller.py" output="screen">
@@ -139,7 +139,7 @@
     <include file="$(find crazyflie_driver)/launch/crazyflie_add.launch">
       <arg name="uri" value="$(arg uri4)" />
       <arg name="tf_prefix" value="$(arg mqname4)" />
-      <arg name="enable_logging" value="True" />
+      <arg name="enable_logging" value="False" />
     </include>
 
     <node name="joystick_controller" pkg="crazyflie_demo" type="controller.py" output="screen">
