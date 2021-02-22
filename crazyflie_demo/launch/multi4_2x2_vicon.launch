@@ -177,6 +177,12 @@
     </node>
   </group>
 
+	<!--
+	<node name="sim_coexecutor" pkg="modquad_simulator" 
+			type="sim_coexecutor.py" output="screen">
+	</node>
+	-->
+
     <!-- run rviz -->
 	<!--
     <param name="robot_description" command="$(find xacro)/xacro $(find crazyflie_description)/urdf/crazyflie.urdf.xacro" />
